@@ -101,7 +101,7 @@ docker run dl-project > log/run.log 2>&1
 The repository is structured as follows:
 
 - **`src/`**: Contains the source code for the machine learning pipeline.
-    - `data_preprocessing_01.py`: Automatically downloads the EURLEX dataset, loads, cleans, tokenizes, and preprocesses legal text data, then splits into train/validation/test sets.
+    - `data_processing_01.py`: Automatically downloads the EURLEX dataset, loads, cleans, tokenizes, and preprocesses legal text data, then splits into train/validation/test sets.
     - `baseline_model_train_02.py`: Trains the baseline model architecture on preprocessed legal text data with configured hyperparameters. The model uses Bag-of-Words with Logistic Regression.
     - `baseline_model_eval_03.py`: Evaluates the trained baseline model on test data and generates performance metrics and visualizations.
     - `mlp_train_04.py`: Trains an MLP (Multi-Layer Perceptron) model as an alternative architecture for legal text classification. The embedding for the MLP is a Sentence Transformers to get proper context for the texts.
@@ -109,6 +109,7 @@ The repository is structured as follows:
     - `inference_06.py`: Performs inference on new, unseen legal documents using trained models to generate predictions.
     - `config.py`: Configuration file containing hyperparameters (e.g., epochs, learning rate) and paths.
     - `utils.py`: Helper functions and utilities used across different scripts, including logging configuration.
+    - `run.sh`: Shell script that orchestrates the entire pipeline execution - runs data preprocessing, baseline training, baseline evaluation, MLP training, MLP evaluation, and inference sequentially. This is the main entry point used by the Dockerfile.
 
 - **`notebook/`**: Contains Jupyter notebooks for analysis and experimentation.
     - `01-data-exploration.ipynb`: Notebook for analyzing the distribution of labels, examining the characteristics of legal text data corresponding to each label, and performing exploratory data analysis (EDA) with visualizations.
