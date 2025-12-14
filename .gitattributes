@@ -1,0 +1,8 @@
+# Ensure shell scripts always use LF line endings
+*.sh text eol=lf
+
+# Ensure bash scripts always use LF line endings
+*.bash text eol=lf
+
+# Let Git handle line endings for text files automatically
+* text=auto
