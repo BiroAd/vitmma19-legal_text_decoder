@@ -17,13 +17,14 @@ This project implements a Legal Text Decoder using machine learning and deep lea
 1. **Baseline Model**: Uses Bag-of-Words (BoW) representation with Logistic Regression for text classification. This provides a simple yet effective baseline for comparison.
 
 2. **MLP Model**: Uses a frozen pre-trained Sentence Transformer (`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`) to generate contextual embeddings for the legal texts. A 2-layer Multi-Layer Perceptron (MLP) is trained on top of these embeddings for classification. The Sentence Transformer remains frozen to reduce computational cost and training time.
+   - **Loss Function**: The model utilizes **Ordinal Cross Entropy Loss (CORAL)**. Since the target labels (sentiment scores 1-5) are ordinal, this loss function is more suitable than standard Cross Entropy as it accounts for the order and distance between classes.
 
 **Note on Model Choice**: More complex architectures like LSTMs or full transformer fine-tuning were not feasible due to the long training times required on CPU without GPU acceleration.
 
 The training pipeline includes:
 - Data preprocessing and tokenization of legal texts
 - Model training with configurable hyperparameters
-- Comprehensive evaluation metrics
+- Comprehensive evaluation metrics: Deep evaluation including Confusion Matrix, Accuracy, Precision, Recall, and F1-score
 - Inference capabilities for new legal documents
 
 The solution follows a modular architecture with separate scripts for each stage of the machine learning pipeline, ensuring reproducibility and maintainability.
@@ -32,14 +33,22 @@ The solution follows a modular architecture with separate scripts for each stage
 
 The data preparation process involves the following steps:
 
-1. **Data Source**: The dataset is automatically downloaded from OneDrive when running the preprocessing script
-2. **Preprocessing**: Run `src/data_preprocessing_01.py` to:
-   - Download the dataset automatically
-   - Load and clean Hungarian legal text documents
-   - Split data into training, validation, and test sets with stratification
-   - Save processed data in the appropriate format for the training pipeline
+1. **Data Source**: The dataset is automatically downloaded from the provided SharePoint link when running the preprocessing script. The dataset contains Hungarian legal text documents with sentiment annotations.
 
-The preprocessing script handles all data acquisition and preparation automatically, requiring no manual data download or placement.
+2. **Data Split Strategy**: 
+   - **Test Set**: Created exclusively from consensus texts, ensuring high-quality evaluation data
+   - **Training and Validation Sets**: Created from regular annotated texts, with stratified splitting to maintain class distribution
+
+3. **Preprocessing**: Run `src/data_processing_01.py` to:
+   - Automatically download the dataset ZIP file
+   - Extract and load JSON annotation files
+   - Process consensus files for test set creation with majority voting
+   - Process regular annotation files for training/validation
+   - Remove duplicate texts between consensus and regular sets
+   - Split regular data into training (85%) and validation (15%) sets with stratification
+   - Save processed datasets in CSV format for the training pipeline
+
+The preprocessing script handles all data acquisition and preparation automatically, requiring no manual data download or placement. The consensus-based test set ensures reliable evaluation metrics.
 
 ### Docker Instructions
 
@@ -104,7 +113,7 @@ The repository is structured as follows:
     - `data_processing_01.py`: Automatically downloads the EURLEX dataset, loads, cleans, tokenizes, and preprocesses legal text data, then splits into train/validation/test sets.
     - `baseline_model_train_02.py`: Trains the baseline model architecture on preprocessed legal text data with configured hyperparameters. The model uses Bag-of-Words with Logistic Regression.
     - `baseline_model_eval_03.py`: Evaluates the trained baseline model on test data and generates performance metrics and visualizations.
-    - `mlp_train_04.py`: Trains an MLP (Multi-Layer Perceptron) model as an alternative architecture for legal text classification. The embedding for the MLP is a Sentence Transformers to get proper context for the texts.
+    - `mlp_train_04.py`: Trains an MLP (Multi-Layer Perceptron) model as an alternative architecture for legal text classification. The embedding for the MLP is a Sentence Transformers to get proper context for the texts. It implements Ordinal Cross Entropy (CORAL) loss for training.
     - `mlp_eval_05.py`: Evaluates the trained MLP model on test data and compares performance against the baseline model.
     - `inference_06.py`: Performs inference on new, unseen legal documents using trained models to generate predictions.
     - `config.py`: Configuration file containing hyperparameters (e.g., epochs, learning rate) and paths.
