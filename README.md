@@ -76,7 +76,7 @@ To run the solution, use the following command.
 
 *Recommended: Create directories first (optional but helpful):*
 ```bash
-mkdir -p data output log
+mkdir -p data output
 ```
 
 *Windows PowerShell:*
